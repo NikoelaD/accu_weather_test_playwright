@@ -1,4 +1,4 @@
-export enum AccuWeatherHourlyConfig {
+export enum HourlyWeatherMetric {
   Wind = "Wind",
   WindGusts = "Wind Gusts",
   AirQuality = "Air Quality",

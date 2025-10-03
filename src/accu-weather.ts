@@ -1,7 +1,7 @@
 import { Locator, Page } from "@playwright/test";
-import { AccuWeatherHourlyConfig } from "./config/hourly-types";
-import { WeatherConfig } from "./config/config";
-import { AccuWeatherTodayConfig } from "./config/today-types";
+import { HourlyWeatherMetric } from "./config/hourly-types";
+import { AccuWeatherConfig } from "./config/config";
+import { TodayWeatherMetric } from "./config/today-types";
 
 export class AccuWeatherPage {
   readonly page: Page;
@@ -33,8 +33,8 @@ export class AccuWeatherPage {
     this.hourlyLinkLocator = this.page.getByRole("link", { name: "Hourly" });
   }
 
-  async navigateToPage() {
-    await this.page.goto(WeatherConfig.urls.base);
+  async goto() {
+    await this.page.goto(AccuWeatherConfig.urls.base);
   }
 
   async closeAdRecursive(): Promise<void> {
@@ -66,7 +66,7 @@ export class AccuWeatherPage {
     await this.closeAdRecursive();
   }
 
-  async getHourlyCityLabelInfo(label: AccuWeatherHourlyConfig) {
+  async getHourlyCityLabelInfo(label: HourlyWeatherMetric) {
     const hourlyLocator = this.page
       .locator(`//p[normalize-space(text())='${label}']/span[@class='value']`)
       .first();
@@ -74,7 +74,7 @@ export class AccuWeatherPage {
     return (await hourlyLocator.innerText())?.trim();
   }
 
-  async getTodayCityLabelInfo(label: AccuWeatherTodayConfig) {
+  async getTodayCityLabelInfo(label: TodayWeatherMetric) {
     const todayLocator = this.page
       .locator(
         `//div[contains(@class, 'spaced-content') and contains(@class, 'detail')][.//span[@class='label' and normalize-space(text())='${label}']]//span[@class='value']`
@@ -95,12 +95,12 @@ export class AccuWeatherPage {
     return { raw: cleaned, numeric: match ? parseInt(match[0], 10) : null };
   }
 
-  async getCurrentHourlyInfo() {
+  async getHourlyInfo() {
     const [tempNum, rawWind, rawWindGust, rawAirQuality] = await Promise.all([
       this.getHourlyTemperature(),
-      this.getHourlyCityLabelInfo(AccuWeatherHourlyConfig.Wind),
-      this.getHourlyCityLabelInfo(AccuWeatherHourlyConfig.WindGusts),
-      this.getHourlyCityLabelInfo(AccuWeatherHourlyConfig.AirQuality),
+      this.getHourlyCityLabelInfo(HourlyWeatherMetric.Wind),
+      this.getHourlyCityLabelInfo(HourlyWeatherMetric.WindGusts),
+      this.getHourlyCityLabelInfo(HourlyWeatherMetric.AirQuality),
     ]);
 
     const windNum = parseInt(rawWind?.match(/\d+/)?.[0] ?? "0", 10);
@@ -116,12 +116,12 @@ export class AccuWeatherPage {
     console.log(result);
   }
 
-  async getCurrentTodayInfo() {
+  async getTodayInfo() {
     const [tempNum, rawWind, rawWindGust, rawAirQuality] = await Promise.all([
-      this.getTodayCityLabelInfo(AccuWeatherTodayConfig.Temperature),
-      this.getTodayCityLabelInfo(AccuWeatherTodayConfig.Wind),
-      this.getTodayCityLabelInfo(AccuWeatherTodayConfig.WindGusts),
-      this.getTodayCityLabelInfo(AccuWeatherTodayConfig.AirQuality),
+      this.getTodayCityLabelInfo(TodayWeatherMetric.Temperature),
+      this.getTodayCityLabelInfo(TodayWeatherMetric.Wind),
+      this.getTodayCityLabelInfo(TodayWeatherMetric.WindGusts),
+      this.getTodayCityLabelInfo(TodayWeatherMetric.AirQuality),
     ]);
 
     const windNum = parseInt(rawWind?.match(/\d+/)?.[0] ?? "0", 10);
@@ -142,7 +142,7 @@ export class AccuWeatherPage {
     await this.closeAdRecursive();
   }
 
-  async getAllTemperatures() {
+  async getTempAvg() {
     const allTexts = await this.tempLoc.allTextContents();
 
     const temps = allTexts.map((text) => {

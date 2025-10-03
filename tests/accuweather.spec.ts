@@ -6,18 +6,14 @@ test.describe("Accu Weather Tests", () => {
 
   test.beforeEach(async ({ page }) => {
     accuWeather = new AccuWeatherPage(page);
-    await accuWeather.navigateToPage();
+    await accuWeather.goto();
     await accuWeather.openCity();
   });
 
   test("test get hourly info", async () => {
     await accuWeather.navigateHourlyWidget();
-    await accuWeather.getCurrentHourlyInfo();
-  });
-
-  test("test get temp average info", async () => {
-    await accuWeather.navigateHourlyWidget();
-    await accuWeather.getAllTemperatures();
+    await accuWeather.getHourlyInfo();
+    await accuWeather.getTempAvg();
   });
 
   test("test today info browser only", async ({ browserName }) => {
@@ -32,6 +28,6 @@ test.describe("Accu Weather Tests", () => {
       "Skipped on mobile browsers and non-Chromium engines"
     );
 
-    await accuWeather.getCurrentTodayInfo();
+    await accuWeather.getTodayInfo();
   });
 });
