@@ -10,15 +10,11 @@ export class AccuWeatherPage {
   readonly searchInputLocator: Locator;
   readonly tempLoc: Locator;
   readonly hourlyLinkLocator: Locator;
-  readonly adIframeSelector: string;
 
   constructor(page: Page) {
     this.page = page;
     const isMobile =
       this.page.context().browser()?.browserType().name() !== "webkit";
-    this.adIframeSelector = isMobile
-      ? 'iframe[name="google_ads_iframe_/6581/mweb/eur/interstitial/weather/local_home_0"]'
-      : 'iframe[name="google_ads_iframe_/6581/web/eur/interstitial/weather/local_home_0"]';
     this.isMobile = isMobile;
     this.popUpLocator = this.page.getByRole("button", {
       name: "Consent",
