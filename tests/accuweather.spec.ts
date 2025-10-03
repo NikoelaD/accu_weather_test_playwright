@@ -16,17 +16,14 @@ test.describe("Accu Weather Tests", () => {
     await accuWeather.getTempAvg();
   });
 
-  test("test today info browser only", async ({ browserName }) => {
+  test("test get today info, browser only", async ({ browserName }) => {
     const viewportWidth = test.info().project.use?.viewport?.width;
 
     const isMobile = viewportWidth !== undefined && viewportWidth <= 600;
     const isNonChromium = browserName === "webkit" || browserName === "firefox";
     const isMobileChromium = browserName === "chromium" && isMobile; // skip mobile as currently no info available, only temperature
 
-    test.skip(
-      isNonChromium || isMobile || isMobileChromium,
-      "Skipped on mobile browsers and non-Chromium engines"
-    );
+    test.skip(isNonChromium || isMobile || isMobileChromium);
 
     await accuWeather.getTodayInfo();
   });
