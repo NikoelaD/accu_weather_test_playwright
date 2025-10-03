@@ -1,0 +1,25 @@
+{
+  "name": "accu_weather_test_playwright",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NikoelaD/accu_weather_test_playwright.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NikoelaD/accu_weather_test_playwright/issues"
+  },
+  "homepage": "https://github.com/NikoelaD/accu_weather_test_playwright#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.55.1",
+    "@types/node": "^24.6.1"
+  }
+}
