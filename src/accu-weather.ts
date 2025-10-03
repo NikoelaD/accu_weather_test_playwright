@@ -6,20 +6,20 @@ import { TodayWeatherMetric } from "./config/today-types";
 export class AccuWeatherPage {
   readonly page: Page;
   isMobile: any;
-  readonly adIframeLocator: Locator;
   readonly popUpLocator: Locator;
   readonly searchInputLocator: Locator;
   readonly tempLoc: Locator;
   readonly hourlyLinkLocator: Locator;
+  readonly adIframeSelector: string;
 
   constructor(page: Page) {
     this.page = page;
-    this.adIframeLocator = this.page
-      .locator(
-        'iframe[name="google_ads_iframe_/6581/mweb/eur/interstitial/weather/local_home_0"]'
-      )
-      .contentFrame()
-      .getByRole("button", { name: "Close ad" });
+    const isMobile =
+      this.page.context().browser()?.browserType().name() !== "webkit";
+    this.adIframeSelector = isMobile
+      ? 'iframe[name="google_ads_iframe_/6581/mweb/eur/interstitial/weather/local_home_0"]'
+      : 'iframe[name="google_ads_iframe_/6581/web/eur/interstitial/weather/local_home_0"]';
+    this.isMobile = isMobile;
     this.popUpLocator = this.page.getByRole("button", {
       name: "Consent",
       exact: true,
@@ -37,22 +37,44 @@ export class AccuWeatherPage {
     await this.page.goto(AccuWeatherConfig.urls.base);
   }
 
-  async closeAdRecursive(): Promise<void> {
-    const adIframe = await this.page.waitForTimeout(2000);
-    if (this.isMobile) {
-      await this.page.evaluate(() => {
-        document.querySelector("div.portal-container")?.remove();
-      });
-      return;
+  async closeAd(): Promise<void> {
+    await this.page.waitForTimeout(2000);
+
+    const iframes = this.page.locator('iframe[name^="google_ads_iframe"]');
+    const count = await iframes.count();
+
+    for (let i = 0; i < count; i++) {
+      try {
+        const iframeHandle = await iframes.nth(i).elementHandle();
+        if (!iframeHandle) continue;
+        const frame = await iframeHandle.contentFrame();
+        if (!frame) continue;
+
+        const closeBtn = frame.getByRole("button", { name: "Close ad" });
+        if (await closeBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
+          await closeBtn.click({ force: true });
+          await closeBtn
+            .waitFor({ state: "hidden", timeout: 3000 })
+            .catch(() => {});
+          return;
+        }
+      } catch {}
     }
 
-    if ((await this.adIframeLocator.count()) === 0) {
-      return;
-    }
-
-    await this.adIframeLocator.click({ force: true });
-    await this.adIframeLocator.first().waitFor({ state: "hidden" });
-    await this.closeAdRecursive.call(this);
+    try {
+      const mobileCloseBtn = this.page.locator(
+        'div#dismiss-button[role="button"]'
+      );
+      if (
+        await mobileCloseBtn.isVisible({ timeout: 3000 }).catch(() => false)
+      ) {
+        await mobileCloseBtn.click({ force: true });
+        await mobileCloseBtn
+          .waitFor({ state: "hidden", timeout: 3000 })
+          .catch(() => {});
+        return;
+      }
+    } catch {}
   }
 
   async closePopup() {
@@ -63,7 +85,7 @@ export class AccuWeatherPage {
     await this.closePopup();
     await this.searchInputLocator.fill(city);
     await this.page.keyboard.press("Enter");
-    await this.closeAdRecursive();
+    await this.closeAd();
   }
 
   async getHourlyCityLabelInfo(label: HourlyWeatherMetric) {
@@ -139,7 +161,7 @@ export class AccuWeatherPage {
 
   async navigateHourlyWidget() {
     await this.hourlyLinkLocator.click();
-    await this.closeAdRecursive();
+    await this.closeAd();
   }
 
   async getTempAvg() {
