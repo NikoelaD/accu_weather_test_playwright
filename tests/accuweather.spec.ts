@@ -1,19 +1,26 @@
 import { test } from "@playwright/test";
-import { AccuWeatherPage } from "../src/accu-weather";
+import { CurrentWeatherPage } from "../src/accuweather-current";
+import { HourlyWeatherPage } from "../src/accuweather-hourly";
+import { UIActions } from "../src/ui-actions";
 
 test.describe("Accu Weather Tests", () => {
-  let accuWeather: AccuWeatherPage;
+  let currentWeather: CurrentWeatherPage;
+  let hourlyWeather: HourlyWeatherPage;
+  let uiActions: UIActions;
 
   test.beforeEach(async ({ page }) => {
-    accuWeather = new AccuWeatherPage(page);
-    await accuWeather.goto();
-    await accuWeather.openCity();
+    currentWeather = new CurrentWeatherPage(page);
+    hourlyWeather = new HourlyWeatherPage(page);
+    uiActions = new UIActions(page);
+    await uiActions.goto();
+    await uiActions.openCity();
   });
 
   test("test get hourly info", async () => {
-    await accuWeather.navigateHourlyWidget();
-    await accuWeather.getHourlyInfo();
-    await accuWeather.getTempAvg();
+    await hourlyWeather.navigateHourlyWidget();
+    await uiActions.closeAd();
+    await hourlyWeather.getHourlyInfo();
+    await currentWeather.getTempAvg();
   });
 
   test("test get today info, browser only", async ({ browserName }) => {
@@ -25,6 +32,6 @@ test.describe("Accu Weather Tests", () => {
 
     test.skip(isNonChromium || isMobile || isMobileChromium);
 
-    await accuWeather.getTodayInfo();
+    await currentWeather.getTodayInfo();
   });
 });
