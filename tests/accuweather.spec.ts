@@ -13,6 +13,7 @@ test.describe("Accu Weather Tests", () => {
     hourlyWeather = new HourlyWeatherPage(page);
     uiActions = new UIActions(page);
     await uiActions.goto();
+    await uiActions.closePopup();
     await uiActions.openCity();
   });
 

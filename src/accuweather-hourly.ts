@@ -19,7 +19,8 @@ export class HourlyWeatherPage {
       .locator(`//p[normalize-space(text())='${label}']/span[@class='value']`)
       .first();
     await hourlyLocator.waitFor({ state: "visible" });
-    return (await hourlyLocator.innerText())?.trim();
+    let hourlyInfoText = (await hourlyLocator.innerText())?.trim();
+    return hourlyInfoText;
   }
 
   async getHourlyTemperature(): Promise<{

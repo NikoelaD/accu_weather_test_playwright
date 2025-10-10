@@ -47,7 +47,6 @@ export class UIActions {
   }
 
   async openCity(city: string = "Sofia-Capital BG") {
-    await this.closePopup();
     await this.searchInputLocator.fill(city);
     await this.page.keyboard.press("Enter");
   }
