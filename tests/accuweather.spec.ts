@@ -17,7 +17,7 @@ test.describe("Accu Weather Tests", () => {
     await uiActions.openCity();
   });
 
-  test("test get hourly info", async ({ browserName }) => {
+  test("test get hourly info, browser only", async () => {
     test.skip((test.info().project.use?.viewport?.width ?? Infinity) <= 600);
 
     await hourlyWeather.navigateHourlyWidget();

@@ -22,18 +22,21 @@ export class UIActions {
   }
 
   async closeAdBrowser(): Promise<void> {
+    await this.page.waitForTimeout(5000);
     let buttonWebLoc = this.page
       .locator(
         'iframe[name="google_ads_iframe_/6581/web/eur/interstitial/weather/local_home_0"]'
       )
       .contentFrame()
       .getByRole("button", { name: "Close ad" });
-    try {
-      await buttonWebLoc.waitFor({ state: "visible" });
-      await buttonWebLoc.click();
-    } catch {
+    let count = await buttonWebLoc.count();
+    if (count === 0) {
       console.log("No ad displayed");
+      return;
     }
+
+    await buttonWebLoc.waitFor({ state: "visible" });
+    await buttonWebLoc.click();
   }
 
   async closeAdMobile(): Promise<void> {
@@ -43,12 +46,13 @@ export class UIActions {
       )
       .contentFrame()
       .getByRole("button", { name: "Close ad" });
-    try {
-      await mobileWebLoc.waitFor({ state: "visible" });
-      await mobileWebLoc.click();
-    } catch {
+    if (!mobileWebLoc) {
       console.log("No ad displayed");
+      return;
     }
+
+    await mobileWebLoc.waitFor({ state: "visible" });
+    await mobileWebLoc.click();
   }
 
   async closePopup() {
