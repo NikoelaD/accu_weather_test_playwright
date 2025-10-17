@@ -22,7 +22,6 @@ export class UIActions {
   }
 
   async closeAdBrowser(): Promise<void> {
-    await this.page.waitForTimeout(5000);
     let buttonWebLoc = this.page
       .locator(
         'iframe[name="google_ads_iframe_/6581/web/eur/interstitial/weather/local_home_0"]'

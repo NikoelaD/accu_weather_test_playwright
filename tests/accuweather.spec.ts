@@ -35,7 +35,7 @@ test.describe("Accu Weather Tests", () => {
     await currentWeather.getTempAvg();
   });
 
-  test("test get today info, browser only", async ({ browserName }) => {
+  test("test get today info, browser only", async () => {
     test.skip((test.info().project.use?.viewport?.width ?? Infinity) <= 600);
 
     await currentWeather.getTodayInfo();
