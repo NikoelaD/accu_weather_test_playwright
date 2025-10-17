@@ -17,21 +17,26 @@ test.describe("Accu Weather Tests", () => {
     await uiActions.openCity();
   });
 
-  test("test get hourly info", async () => {
+  test("test get hourly info", async ({ browserName }) => {
+    test.skip((test.info().project.use?.viewport?.width ?? Infinity) <= 600);
+
     await hourlyWeather.navigateHourlyWidget();
-    await uiActions.closeAd();
+    await uiActions.closeAdBrowser();
+    await hourlyWeather.getHourlyInfo();
+    await currentWeather.getTempAvg();
+  });
+
+  test("test get hourly info, phone only", async () => {
+    test.skip((test.info().project.use?.viewport?.width ?? 0) > 600);
+
+    await hourlyWeather.navigateHourlyWidget();
+    await uiActions.closeAdMobile();
     await hourlyWeather.getHourlyInfo();
     await currentWeather.getTempAvg();
   });
 
   test("test get today info, browser only", async ({ browserName }) => {
-    const viewportWidth = test.info().project.use?.viewport?.width;
-
-    const isMobile = viewportWidth !== undefined && viewportWidth <= 600;
-    const isNonChromium = browserName === "webkit" || browserName === "firefox";
-    const isMobileChromium = browserName === "chromium" && isMobile; // skip mobile as currently no info available, only temperature
-
-    test.skip(isNonChromium || isMobile || isMobileChromium);
+    test.skip((test.info().project.use?.viewport?.width ?? Infinity) <= 600);
 
     await currentWeather.getTodayInfo();
   });

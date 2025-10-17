@@ -1,4 +1,4 @@
-import { Locator, Page } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 import { AccuWeatherConfig } from "./config/config";
 
 export class UIActions {
@@ -21,24 +21,33 @@ export class UIActions {
     await this.page.goto(AccuWeatherConfig.urls.base);
   }
 
-  async closeAd(): Promise<void> {
-    const iframeNames = [
-      "google_ads_iframe_/6581/web/eur/interstitial/weather/hourly_0",
-      "google_ads_iframe_/6581/mweb/eur/interstitial/weather/hourly_0",
-    ];
+  async closeAdBrowser(): Promise<void> {
+    let buttonWebLoc = this.page
+      .locator(
+        'iframe[name="google_ads_iframe_/6581/web/eur/interstitial/weather/local_home_0"]'
+      )
+      .contentFrame()
+      .getByRole("button", { name: "Close ad" });
+    try {
+      await buttonWebLoc.waitFor({ state: "visible" });
+      await buttonWebLoc.click();
+    } catch {
+      console.log("No ad displayed");
+    }
+  }
 
-    for (const name of iframeNames) {
-      const iframeLocator = this.page.frameLocator(`iframe[name="${name}"]`);
-      const closeButton = iframeLocator.getByRole("button", {
-        name: "Close ad",
-      });
-
-      if ((await closeButton.count()) === 0) continue;
-
-      if (await closeButton.isVisible()) {
-        await closeButton.click();
-        break;
-      }
+  async closeAdMobile(): Promise<void> {
+    let mobileWebLoc = this.page
+      .locator(
+        'iframe[name="google_ads_iframe_/6581/mweb/eur/interstitial/weather/local_home_0"]'
+      )
+      .contentFrame()
+      .getByRole("button", { name: "Close ad" });
+    try {
+      await mobileWebLoc.waitFor({ state: "visible" });
+      await mobileWebLoc.click();
+    } catch {
+      console.log("No ad displayed");
     }
   }
 
@@ -49,5 +58,13 @@ export class UIActions {
   async openCity(city: string = "Sofia-Capital BG") {
     await this.searchInputLocator.fill(city);
     await this.page.keyboard.press("Enter");
+  }
+
+  async openCityWidget() {
+    let cityWidgetLocator = await this.page.getByRole("link", {
+      name: "Current Weather",
+    });
+    await cityWidgetLocator.scrollIntoViewIfNeeded();
+    await cityWidgetLocator.click();
   }
 }
