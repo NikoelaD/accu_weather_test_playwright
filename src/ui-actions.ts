@@ -21,37 +21,25 @@ export class UIActions {
     await this.page.goto(AccuWeatherConfig.urls.base);
   }
 
-  async closeAdBrowser(): Promise<void> {
-    let buttonWebLoc = this.page
-      .locator(
-        'iframe[name="google_ads_iframe_/6581/web/eur/interstitial/weather/local_home_0"]'
-      )
-      .contentFrame()
-      .getByRole("button", { name: "Close ad" });
-    let count = await buttonWebLoc.count();
-    if (count === 0) {
-      console.log("No ad displayed");
-      return;
+  async closeAd(): Promise<void> {
+    const iframeSelectors = [
+      'iframe[name="google_ads_iframe_/6581/web/eur/interstitial/weather/local_home_0"]',
+      'iframe[name="google_ads_iframe_/6581/mweb/eur/interstitial/weather/local_home_0"]',
+    ];
+
+    for (const selector of iframeSelectors) {
+      const iframeLocator = this.page.locator(selector).contentFrame();
+      const closeBtn = iframeLocator.getByRole("button", { name: "Close ad" });
+      const count = await closeBtn.count();
+
+      if (count > 0) {
+        await closeBtn.waitFor({ state: "visible" });
+        await closeBtn.click();
+        return;
+      }
     }
 
-    await buttonWebLoc.waitFor({ state: "visible" });
-    await buttonWebLoc.click();
-  }
-
-  async closeAdMobile(): Promise<void> {
-    let mobileWebLoc = this.page
-      .locator(
-        'iframe[name="google_ads_iframe_/6581/mweb/eur/interstitial/weather/local_home_0"]'
-      )
-      .contentFrame()
-      .getByRole("button", { name: "Close ad" });
-    if (!mobileWebLoc) {
-      console.log("No ad displayed");
-      return;
-    }
-
-    await mobileWebLoc.waitFor({ state: "visible" });
-    await mobileWebLoc.click();
+    console.log("No ad displayed");
   }
 
   async closePopup() {

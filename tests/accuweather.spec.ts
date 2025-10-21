@@ -18,19 +18,8 @@ test.describe("Accu Weather Tests", () => {
   });
 
   test("test get hourly info, browser only", async () => {
-    test.skip((test.info().project.use?.viewport?.width ?? Infinity) <= 600);
-
     await hourlyWeather.navigateHourlyWidget();
-    await uiActions.closeAdBrowser();
-    await hourlyWeather.getHourlyInfo();
-    await currentWeather.getTempAvg();
-  });
-
-  test("test get hourly info, phone only", async () => {
-    test.skip((test.info().project.use?.viewport?.width ?? 0) > 600);
-
-    await hourlyWeather.navigateHourlyWidget();
-    await uiActions.closeAdMobile();
+    await uiActions.closeAd();
     await hourlyWeather.getHourlyInfo();
     await currentWeather.getTempAvg();
   });

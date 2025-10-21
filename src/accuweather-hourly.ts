@@ -59,7 +59,7 @@ export class HourlyWeatherPage {
     await this.hourlyLinkLocator.click();
   }
 
-  async getHourlyTempAvg() {
+  async getHourlyTempAvg(): Promise<{ temps: number[]; average: number }> {
     const allTexts = await this.tempLoc.allTextContents();
 
     const temps = allTexts.map((text) => {
