@@ -24,9 +24,8 @@ test.describe("Accu Weather Tests", () => {
     await currentWeather.getTempAvg();
   });
 
-  test("test get today info, browser only", async () => {
-    test.skip((test.info().project.use?.viewport?.width ?? Infinity) <= 600);
-
+  test("test get today info, browser only", async ({ isMobile }) => {
+    test.skip(isMobile, "Skip test on mobile devices");
     await currentWeather.getTodayInfo();
   });
 });

@@ -1,4 +1,4 @@
-import { expect, Locator, Page } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
 import { AccuWeatherConfig } from "./config/config";
 
 export class UIActions {
@@ -28,13 +28,15 @@ export class UIActions {
     ];
 
     for (const selector of iframeSelectors) {
-      const iframeLocator = this.page.locator(selector).contentFrame();
-      const closeBtn = iframeLocator.getByRole("button", { name: "Close ad" });
-      const count = await closeBtn.count();
+      const iframeLocator = this.page
+        .locator(selector)
+        .contentFrame()
+        .getByRole("button", { name: "Close ad" });
+      const count = await iframeLocator.count();
 
       if (count > 0) {
-        await closeBtn.waitFor({ state: "visible" });
-        await closeBtn.click();
+        await iframeLocator.waitFor({ state: "visible" });
+        await iframeLocator.click();
         return;
       }
     }
